@@ -10,6 +10,7 @@ config (or better). It can be a foundation for your own config or a resource for
 Emacs enthusiasts to learn more about our favorite operating system.
 #+end_quote
 
+
 * Table of Contents :toc:noexport:
 - [[#intro][Intro]]
   - [[#what-is-emacs][What is Emacs?]]
@@ -203,9 +204,9 @@ I am using rime for my default input method.
 #+end_src
 *** Set font
 #+begin_src emacs-lisp :tangle yes
-(setq! doom-font (font-spec :family "Menlo" :size 18  :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "monospace" :size 18)
-      doom-unicode-font (font-spec :family "monospace" :size 18)
+(setq! doom-font (font-spec :family "FiraCode Nerd Font" :size 20  :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "monospace" :size 20)
+      doom-unicode-font (font-spec :family "monospace" :size 20)
       )
 #+end_src
 
@@ -1047,12 +1048,19 @@ Exwm is a window manager based on emacs.
          floating t
          floating-mode-line nil
          width 0.6
-         height 0.8)
+         height 0.8
+         )
         ((equal exwm-class-name "Brave-browser")
          workspace 1
          char-mode t)
         ((equal exwm-class-name "discord")
          workspace 3)
+        ((equal exwm-class-name "Gpick")
+         floating t
+         floating-mode-line nil
+         width 0.4
+         height 0.5
+         )
         )
       )
 
