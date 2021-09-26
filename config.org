@@ -60,6 +60,7 @@ Emacs enthusiasts to learn more about our favorite operating system.
   - [[#grammar][grammar]]
   - [[#eshell][eshell]]
   - [[#rss][RSS]]
+  - [[#ebuild-mode][ebuild mode]]
 - [[#system][System]]
   - [[#commands][Commands]]
   - [[#re-tangle-codes][Re-tangle codes]]
@@ -822,6 +823,11 @@ Flash card for studying
         "https://feeds.feedburner.com/ruanyifeng"
         ))
 #+end_src
+** ebuild mode
+#+begin_src emacs-lisp :tangle packages.el
+(package! ebuild-mode)
+#+end_src
+
 * System
 ** Commands
 #+begin_src emacs-lisp :tangle yes
@@ -870,6 +876,7 @@ Flash card for studying
   (delete-directory "~/Project/blog/public" t)
   (shell-command "hugo -D")
   (shell-command "rsync --archive --compress --verbose --human-readable --progress ~/Project/blog/public/* root@yemouren.com:/var/www/blog/")
+  (cd "~/org/blogs")
   )
 #+end_src
 ** Re-tangle codes
