@@ -866,11 +866,10 @@ Flash card for studying
 
 (defun sync-website ()
   (interactive)
-  (shell-command "pushd")
+  (cd "~/Project/blog")
   (delete-directory "~/Project/blog/public" t)
   (shell-command "hugo -D")
   (shell-command "rsync --archive --compress --verbose --human-readable --progress ~/Project/blog/public/* root@yemouren.com:/var/www/blog/")
-  (shell-command "popd")
   )
 #+end_src
 ** Re-tangle codes
