@@ -1,0 +1,5 @@
+* doom-config
+
+My configuration of doom
+
+#+INCLUDE: ./config.org
