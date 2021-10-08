@@ -2,3 +2,4 @@
 /config.el
 /packages.el
 /.poem.json
+/flycheck_config.org

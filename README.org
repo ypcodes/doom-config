@@ -1,5 +1,5 @@
+#+TITLE: README
+#+DESCRIPTION: Readme file of my doom.d
+
 * doom-config
-
 My configuration of doom
-
-#+INCLUDE: ./config.org
