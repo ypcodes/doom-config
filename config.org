@@ -2,15 +2,6 @@
 #+DESCRIPTION: My configuration of doom emacs
 #+STARTUP: overview
 
-#+begin_quote
-Doom is a configuration framework for GNU Emacs tailored for Emacs bankruptcy
-veterans who want less framework in their frameworks, a modicum of stability (and
-reproducibility) from their package manager, and the performance of a hand rolled
-config (or better). It can be a foundation for your own config or a resource for
-Emacs enthusiasts to learn more about our favorite operating system.
-#+end_quote
-
-
 * Intro
 ** What is Emacs?
 这部分基本上是 GNU Emacs 官方手册上的东西。
@@ -124,9 +115,9 @@ I am using rime for my default input method.
 #+end_src
 ** Display line number
 #+begin_src emacs-lisp :tangle yes
-;; (setq display-line-numbers-type 'visual)
-(setq display-line-numbers-type nil)
+(setq display-line-numbers-type t)
 #+end_src
+
 ** UI
 *** Display battery and time on modeline
 #+begin_src emacs-lisp :tangle yes
@@ -141,7 +132,7 @@ I am using rime for my default input method.
 #+end_src
 *** Set theme
 #+begin_src emacs-lisp :tangle yes
-(setq doom-theme 'doom-city-lights)
+;; (setq doom-theme 'doom-city-lights)
 #+end_src
 *** Set font
 #+begin_src emacs-lisp :tangle yes
@@ -364,9 +355,10 @@ Flash card for studying
 #+end_src
 ** rainbow mode
 #+begin_src emacs-lisp :tangle yes
-(add-hook! (cc-mode c-mode c++-mode)
-  (rainbow-delimiters-mode))
-;; (setq rainbow-fart-voice-model "JustKowalski")
+(add-hook 'emacs-startup-mode
+  'rainbow-delimiters-mode)
+(add-hook! 'rainbow-mode-hook
+  (hl-line-mode (if rainbow-mode -1 +1)))
 #+end_src
 ** company mode
 #+begin_src emacs-lisp :tangle yes
@@ -407,18 +399,6 @@ Flash card for studying
   :hook (after-init . global-pangu-spacing-mode))
 #+end_src
 
-** COMMENT all-the-icons-rich
-#+begin_src emacs-lisp :tangle packages.el
-(package! all-the-icons-ivy
-  :recipe (:host github :repo "asok/all-the-icons-ivy"
-           :files ("*.el")))
-(package! all-the-icons-ivy-rich)
-#+end_src
-#+begin_src emacs-lisp :tangle yes
-(use-package! all-the-icons-ivy-rich
-  :config
-  (add-hook 'after-init-hook #'all-the-icons-ivy-rich-mode))
-#+end_src
 ** evil
 #+begin_src emacs-lisp :tangle yes
 (use-package! evil
@@ -800,7 +780,18 @@ Flash card for studying
 #+begin_src emacs-lisp :tangle yes
 (use-package! rand-theme
   :config
-  (setq rand-theme-unwanted '(leuven tango adwaita light-blue tsdh-light dichromacy whiteboard))
+  (setq rand-theme-unwanted '(leuven tango adwaita light-blue
+                                     tsdh-light
+                                     dichromacy
+                                     whiteboard
+                                     doom-one-light
+                                     doom-nord-light
+                                     doom-opera-light
+                                     doom-ayu-light
+                                     doom-gruvbox-light
+                                     doom-solarized-light
+                                     doom-acario-light
+                                     ))
   (rand-theme)
   )
 #+end_src
@@ -847,6 +838,11 @@ Flash card for studying
   (interactive)
   (shell-command "scrot --select ~/Pictures/screenshot/pic-$(date '+%y%m%d-%H%M-%S').png"))
 
+(defun yp/screenshot-clip
+  (interactive)
+  (shell-command "scrot -e 'xclip -selection clipboard -t image/png -i $f' -s")
+  )
+
 (defun sync-website ()
   (interactive)
   (cd "~/Project/blog")
@@ -871,7 +867,7 @@ Flash card for studying
 
 Set PATH
 #+begin_src emacs-lisp :tangle yes
-(setenv "PATH" (concat (getenv "PATH") ":" (concat (getenv "HOME") "/.emacs.d/bin")))
+(setenv "PATH" (concat (getenv "PATH") ":" (concat (getenv "HOME") "/.emacs.d/bin") ":/usr/lib/go/bin"))
 #+end_src
 
 Set proxy
@@ -901,6 +897,7 @@ Set winearch
 #+begin_src emacs-lisp :tangle yes
 (setenv "WINEARCH" "win32")
 #+end_src
+
 ** Startup tools
 #+begin_src emacs-lisp :tangle yes
 (start-process-shell-command "xcompmgr" nil "xcompmgr")
@@ -910,6 +907,7 @@ Set winearch
 (start-process-shell-command "dunst" nil "dunst")
 (start-process-shell-command "mpd" nil "mpd")
 (start-process-shell-command "clash" nil "clash")
+(start-process-shell-command "espanso" nil "espanso")
 (shell-command "xrdb -merge ~/.config/x11/Xresources")
 (shell-command "setxkbmap -option 'ctrl:nocaps'")
 (shell-command "xcape -e 'Control_L=Escape'")
@@ -1035,7 +1033,6 @@ Exwm is a window manager based on emacs.
          char-mode t)
         ((equal exwm-class-name "St")
          char-mode t)
-
         ((equal exwm-class-name "discord")
          workspace 3)
         ((equal exwm-class-name "Gpick")
@@ -1043,12 +1040,13 @@ Exwm is a window manager based on emacs.
          floating-mode-line nil
          width 0.4
          height 0.5)
-        )
       )
+    )
 
 (add-hook 'exwm-floating-setup-hook
           (lambda ()
-            (exwm-layout-hide-mode-line)))
+            (exwm-layout-hide-mode-line)
+            (setq floating-mode-line nil)))
 ;; Make buffer name more meaningful
 (add-hook 'exwm-update-class-hook
           (lambda ()

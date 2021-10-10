@@ -23,15 +23,15 @@
        (company +childframe)             ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       ;; (ivy +prescient +icons)   ; a search engine for love and life
-       (vertico +icons)            ; the search engine of the future
+       (ivy +prescient +icons)   ; a search engine for love and life
+       ;;(vertico +icons)            ; the search engine of the future
 
        :ui
        deft                             ; notational velocity for Emacs
        doom                             ; what makes DOOM look the way it does
        ;;doom-dashboard                   ; a nifty splash screen for Emacs
        doom-quit                        ; DOOM quit-message prompts when you quit Emacs
-       (emoji +unicode)         ; 🙂
+       (emoji +unicode +github)         ; 🙂
        fill-column                      ; a `fill-column' indicator
        hl-todo                          ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        hydra
@@ -87,9 +87,9 @@
        :tools
        ;;ansible
        debugger                         ; FIXME stepping through code, to help you add bugs
-       ;;direnv
-       ;;docker
-       ;; editorconfig      ; let someone else argue about tabs vs spaces
+       direnv
+       docker
+       editorconfig      ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)                  ; run code, run (also, repls)
        gist                             ; interacting with github gists
@@ -101,15 +101,15 @@
        (pass +auth)                            ; password manager for nerds
        pdf                              ; pdf enhancements
        ;;prodigy                          ; FIXME managing external services & code builders
-       ;; rgb                              ; creating color strings
-       ;; taskrunner         ; taskrunner for all your projects
-       ;; terraform          ; infrastructure as code
-       ;; tmux              ; an API for interacting with tmux
+       rgb                              ; creating color strings
+       taskrunner         ; taskrunner for all your projects
+       ;;terraform          ; infrastructure as code
+       ;;tmux              ; an API for interacting with tmux
        upload                           ; map local to remote projects via ssh/ftp
 
        :os
        ;; (:if IS-MAC macos)               ; improve compatibility with macOS
-       ;; tty                              ; improve the terminal Emacs experience
+       tty                              ; improve the terminal Emacs experience
 
        :lang
        ;;agda              ; types of types of types of types...
@@ -120,7 +120,7 @@
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
        ;;csharp            ; unity, .NET, and mono shenanigans
-       ;;data              ; config/data formats
+       data              ; config/data formats
        ;;(dart +flutter)   ; paint ui and not much else
        ;;elixir            ; erlang done right
        ;;elm               ; care for a cup of TEA?
@@ -131,12 +131,12 @@
        ;;fsharp            ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
-       ;;(go +lsp)         ; the hipster dialect
+       (go +lsp)         ; the hipster dialect
        ;;(haskell +dante)                 ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
        ;;(json +lsp)                      ; At least it ain't XML
-       ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
+       (java +meghanada) ; the poster child for carpal tunnel syndrome
        ;;(javascript +lsp)                ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
@@ -155,10 +155,10 @@
             +roam +pomodoro
             +gnuplot +hugo
             +journal)                           ; organize your plain life in plain text
-       ;; php                              ; perl's insecure younger brother
-       ;; plantuml          ; diagrams for confusing people more
+       ;;php                              ; perl's insecure younger brother
+       ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
-       (python +lsp)             ; beautiful is better than ugly
+       (python +lsp +pyright)             ; beautiful is better than ugly
        ;;qt               ; the 'cutest' gui framework ever
        ;;racket           ; a DSL for DSLs
        ;;raku              ; the artist formerly known as perl6
@@ -168,7 +168,7 @@
        ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        (scheme +racket)               ; a fully conniving family of lisps
-       (sh +powershell)                               ; she sells {ba,z,fi}sh shells on the C xor
+       sh                                ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
