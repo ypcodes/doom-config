@@ -106,7 +106,7 @@ I am using rime for my default input method.
 #+begin_src emacs-lisp :tangle yes
 (toggle-frame-fullscreen)
 #+end_src
-** ~custom.el~
+** custom.el
 #+begin_src emacs-lisp :tangle yes
 (setq-default custom-file (expand-file-name ".custom.el" doom-private-dir))
 (when (file-exists-p custom-file)
