@@ -907,7 +907,7 @@ Set winearch
 (start-process-shell-command "dunst" nil "dunst")
 (start-process-shell-command "mpd" nil "mpd")
 (start-process-shell-command "clash" nil "clash")
-(start-process-shell-command "espanso" nil "espanso")
+(start-process-shell-command "espanso" nil "espanso start")
 (shell-command "xrdb -merge ~/.config/x11/Xresources")
 (shell-command "setxkbmap -option 'ctrl:nocaps'")
 (shell-command "xcape -e 'Control_L=Escape'")
