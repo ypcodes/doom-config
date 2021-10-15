@@ -1058,7 +1058,6 @@ Exwm is a window manager based on emacs.
 (require 'exwm)
 (require 'exwm-config)
 (exwm-enable)
-;; (require 'exwm-systemtray)
-;; (exwm-systemtray-enable)
+(require 'exwm-systemtray)
+(exwm-systemtray-enable)
 #+end_src
-
