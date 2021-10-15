@@ -63,7 +63,7 @@ Next, run =doom sync=.
 
 * Basic Configuration
 ** Lexical Binding
-#+begin_src emacs-lisp :tangle yes :comments no
+#+begin_src emacs-lisp :tangle yes
 ;;; config.el - doom emacs config file. -*- lexical-binding: t -*-
 #+end_src
 
