@@ -136,9 +136,9 @@ I am using rime for my default input method.
 #+end_src
 *** Set font
 #+begin_src emacs-lisp :tangle yes
-(setq! doom-font (font-spec :family "FiraCode Nerd Font" :size 22  :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "monospace" :size 22)
-      doom-unicode-font (font-spec :family "monospace" :size 22)
+(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 22  :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Menlo" :size 22)
+      doom-unicode-font (font-spec :family "FiraCode Nerd Font" :size 22)
       )
 #+end_src
 
