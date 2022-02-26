@@ -1,5 +1,5 @@
 #+TITLE: Doom Emacs Configuration
-#+DESCRIPTION: My configuration of doom emacs
+#+DESCRIPTION: 我的 Doom Emacs 配置
 #+STARTUP: overview
 
 * Intro
@@ -50,8 +50,8 @@ emerge -av emacs
 git clone -depth=1 https://github.com/hilssner/doom-emacs ~/.emacs.d
 ~/.emacs.d/bin/doom install
 #+end_src
-** Install My Configfile
-First clone this repository.
+** Install My Configuration
+First of all, clone this repository.
 #+begin_src sh
 git clone --depth=1 https://github.com/ypcodes/.doom.d.git
 #+end_src
@@ -70,6 +70,9 @@ Next, run =doom sync=.
 #+begin_src emacs-lisp :tangle packages.el
 ;;; packages.el - doom emacs packages file. -*- lexical-binding: t -*-
 #+end_src
+** Emacs
+#+begin_src emacs-lisp :tangle yes
+#+end_src
 ** Exit emacs without confirm
 #+begin_src emacs-lisp :tangle yes
 (setq confirm-kill-emacs nil
@@ -78,7 +81,7 @@ Next, run =doom sync=.
 #+end_src
 ** Startup Performace
 #+begin_src emacs-lisp :tangle yes
-
+(require 'site-gentoo)
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -90,7 +93,7 @@ Next, run =doom sync=.
                              (float-time
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
-
+;; load site-gentoo
 #+end_src
 ** Input Method
 I am using rime for my default input method.
@@ -99,7 +102,7 @@ I am using rime for my default input method.
 #+end_src
 ** User name and email
 #+begin_src emacs-lisp :tangle yes
-(setq user-full-name "Ye Peng"
+(setq user-full-name "Yeh Peng"
       user-mail-address "yemouren@protonmail.com")
 #+end_src
 ** custom.el
@@ -120,22 +123,25 @@ I am using rime for my default input method.
 (display-time-mode t)
 (display-battery-mode 1)
 #+end_src
-*** Emacs opacity
+*** Emacs transparent
 #+begin_src emacs-lisp :tangle yes
-(doom/set-frame-opacity '78)
-(set-frame-parameter (selected-frame) 'alpha '(78 80))
-(add-to-list 'default-frame-alist '(alpha 78 80))
+(doom/set-frame-opacity '90)
+(set-frame-parameter (selected-frame) 'alpha '(90 95))
+(add-to-list 'default-frame-alist '(alpha 90 95))
 #+end_src
 *** Set theme
 #+begin_src emacs-lisp :tangle yes
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-oceanic-next)
+#+end_src
+*** Dashboard
+#+begin_src emacs-lisp :tangle yes
+(setq fancy-splash-image "~/.doom.d/splash.png")
 #+end_src
 *** Set font
 #+begin_src emacs-lisp :tangle yes
-(setq! doom-font (font-spec :family "FiraCode Nerd Font" :size 22  :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Menlo" :size 22)
-      doom-unicode-font (font-spec :family "Symbola" :size 22)
-      )
+(setq! doom-font (font-spec :family "FiraCode Nerd Font" :size 17  :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Menlo" :size 17)
+      doom-unicode-font (font-spec :family "FiraCode Nerd Font" :size 17))
 #+end_src
 
 *** Set fill-column
@@ -143,7 +149,7 @@ I am using rime for my default input method.
 (setq-default fill-column 80)
 ;; 显示
 (add-hook 'doom-first-buffer-hook
-          #'global-display-fill-column-indicator-mode)
+          'global-display-fill-column-indicator-mode)
 #+end_src
 
 ** Scratch buffer
@@ -157,18 +163,133 @@ Use orgmode as major mode of =*scratch* buffer=
 ;; W 用 `xdg-open' 打开文件
 (setq browse-url-handlers '(("\\`file:" . browse-url-default-browser)))
 #+end_src
+** hideshow
+#+begin_src emacs-lisp :tangle yes
+(use-package! hideshow
+  :diminish hs-minor-mode
+  :hook (prog-mode . hs-minor-mode)
+  :config
+  ;; 这里额外启用了 :box t 属性使得提示更加明显
+  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+
+  (defun hideshow-folded-overlay-fn (ov)
+    (when (eq 'code (overlay-get ov 'hs))
+      (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+             (info (format " ... #%d " nlines)))
+        (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+  (setq hs-set-up-overlay 'hideshow-folded-overlay-fn)
+  )
+
+#+end_src
+** whitespace
+#+begin_src emacs-lisp :tangle yes
+(use-package! whitespace
+  :hook (after-init . global-whitespace-mode) ;; 注意，这里是全局打开
+  :config
+  ;; Don't use different background for tabs.
+  (face-spec-set 'whitespace-tab
+                 '((t :background unspecified)))
+  ;; Only use background and underline for long lines, so we can still have
+  ;; syntax highlight.
+
+  ;; For some reason use face-defface-spec as spec-type doesn't work.  My guess
+  ;; is it's due to the variables with the same name as the faces in
+  ;; whitespace.el.  Anyway, we have to manually set some attribute to
+  ;; unspecified here.
+  (face-spec-set 'whitespace-line
+                 '((((background light))
+                    :background "#d8d8d8" :foreground unspecified
+                    :underline t :weight unspecified)
+                   (t
+                    :background "#404040" :foreground unspecified
+                    :underline t :weight unspecified)))
+
+  ;; Use softer visual cue for space before tabs.
+  (face-spec-set 'whitespace-space-before-tab
+                 '((((background light))
+                    :background "#d8d8d8" :foreground "#de4da1")
+                   (t
+                    :inherit warning
+                    :background "#404040" :foreground "#ee6aa7")))
+
+  (setq
+   whitespace-line-column nil
+   whitespace-style
+   '(face             ; visualize things below:
+     empty            ; empty lines at beginning/end of buffer
+     lines-tail       ; lines go beyond `fill-column'
+     space-before-tab ; spaces before tab
+     trailing         ; trailing blanks
+     tabs             ; tabs (show by face)
+     tab-mark         ; tabs (show by symbol)
+     )))
+#+end_src
+** so-long
+#+begin_src emacs-lisp :tangle yes
+(use-package so-long
+  :ensure nil
+  :config (global-so-long-mode 1))
+#+end_src
+** delete selection
+#+begin_src emacs-lisp :tangle yes
+(use-package delsel
+  :ensure nil
+  :hook (after-init . delete-selection-mode))
+#+end_src
+** webjump
+#+begin_src emacs-lisp :tangle yes
+(use-package! webjump
+  :bind ("C-c /" . webjump)
+  :custom
+  (webjump-sites '(
+                   ;; Emacs.
+                   ("Emacs Home Page" .
+                    "www.gnu.org/software/emacs/emacs.html")
+                   ("Savannah Emacs page" .
+                    "savannah.gnu.org/projects/emacs")
+
+                   ;; Internet search engines.
+                   ("DuckDuckGo" .
+                    [simple-query "duckduckgo.com"
+                                  "duckduckgo.com/?q=" ""])
+                   ("Google" .
+                    [simple-query "www.google.com"
+                                  "www.google.com/search?q=" ""])
+                   ("Youtube" .
+                    [simple-query "www.youtube.com"
+                                  "www.youtube.com/search?q=" ""])
+                   ("Bilibili" .
+                    [simple-query "www.bilibili.com"
+                                  "search.bilibili.com/all?keyword=" ""])
+                   ("Google Groups" .
+                    [simple-query "groups.google.com"
+                                  "groups.google.com/groups?q=" ""])
+                   ("Wikipedia" .
+                    [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""]))))
+#+end_src
+** calendar
+#+begin_src emacs-lisp :tangle yes
+(defun my-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:org-create-file-source "cal" "~/org/agenda/agenda.org" "Cyan")  ; other org source
+    (cfw:ical-create-source "coursera" "http://www.coursera.org/api/learnerCalendars.v1/61574607/5ZN355h8SGeYtml-MKQsOg.ics" "IndianRed"))))
+#+end_src
+
 * Packages
-** org mode
-*** Basics
+** org mode :org:
+*** Basic
+用 ~#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>~
+以应用 css
 #+begin_src emacs-lisp :tangle yes
 (use-package! org
-  :hook ((org-mode . org-superstar-mode)
-         (org-mode . org-num-mode)
-         )
+  :hook ((org-mode . org-superstar-mode))
   :config
-  (setq org-hide-emphasis-markers t)
-  (setq org-directory "~/org/")
-  )
+  (setq org-hide-emphasis-markers t
+        org-directory "~/org/"
+        org-html-htmlize-output-type 'css))
 #+end_src
 *** Org Jounal
 #+begin_src emacs-lisp :tangle yes
@@ -193,7 +314,7 @@ You should comment the section when running ~doom doctor~
         deft-extensions '("org")
         deft-use-filter-string-for-filename t
         deft-recursive t
-        ))
+        deft-use-filename-as-title t))
 #+end_src
 *** Org agneda
 #+begin_src emacs-lisp :tangle packages.el
@@ -254,7 +375,7 @@ You should comment the section when running ~doom doctor~
 (use-package! org-media-note
   :hook (org-mode .  org-media-note-mode)
   :config
-  (setq org-media-note-screenshot-image-dir "~/imgs/orgmedia")  ;; 用于存储视频截图的目录
+  (setq org-media-note-screenshot-image-dir "~/org/imgs/orgmedia")  ;; 用于存储视频截图的目录
   (map! :leader
         :desc "Open org-media body"
         :after org-mode
@@ -267,15 +388,6 @@ You should comment the section when running ~doom doctor~
   :config
   (setq org-pomodoro-length '45))
 #+end_src
-*** org drill
-Flash card for studying
-#+begin_src emacs-lisp :tangle packages.el
-(package! org-drill)
-#+end_src
-*** org-fancy-priorities
-#+begin_src emacs-lisp :tangle yes
-(add-hook 'org-agenda-mode-hook 'org-fancy-priorities-mode)
-#+end_src
 *** org-alert
 #+begin_src emacs-lisp :tangle packages.el
 (package! org-alert)
@@ -287,35 +399,83 @@ Flash card for studying
   (org-alert-enable)
 )
 #+end_src
+*** org roam ui
+#+begin_src emacs-lisp :tangle packages.el
+(unpin! org-roam)
+(package! websocket)
+(package! simple-httpd)
+(package! org-roam-ui
+   :recipe (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out")))
+#+end_src
 
+#+begin_src emacs-lisp :tangle yes
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+*** org pretty tags
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-pretty-tags)
+(package! org-tag-beautify)
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! org-tag-beautify
+  :init (org-tag-beautify-mode 1))
+#+end_src
+*** org books
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-books
+  :recipe (:host github
+           :repo "lepisma/org-books"))
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes
+(after! org-books
+  (setq org-books-file "~/org/booklists.org")
+  (add-to-list 'org-capture-templates
+      '("b" "Book log" entry (function org-books-visit-book-log)
+          "- %U %?" :prepend t)))
+#+end_src
 ** whichkey
 #+begin_src emacs-lisp :tangle yes
 (after! whichkey
   :config
-  (setq which-key-idle-delay 0.5))
+  (setq which-key-idle-delay 0.2))
 #+end_src
-** pretty mode
+** pretty mode :beautiful:
 #+begin_src emacs-lisp :tangle packages.el
 (package! pretty-mode)
 #+end_src
 #+begin_src emacs-lisp :tangle yes
-(add-hook 'after-init-hook 'prettify-symbols-mode)
-(add-hook 'after-init-hook 'pretty-mode)
+(add-hook 'after-init-hook 'global-prettify-symbols-mode)
+(add-hook 'after-init-hook 'global-pretty-mode)
 #+end_src
-** rainbow mode
+** rainbow mode :beautiful:
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'emacs-startup-mode
   'rainbow-delimiters-mode)
 (add-hook! 'rainbow-mode-hook
   (hl-line-mode (if rainbow-mode -1 +1)))
 #+end_src
-** company mode
+** company mode :complete:
 #+begin_src emacs-lisp :tangle yes
 (after! company
   (setq! company-minimum-prefix-length 2
-         company-idle-delay 0.5))
+         company-idle-delay 0.3))
 #+end_src
-** valign
+** valign :beautiful:
 #+begin_src emacs-lisp :tangle packages.el
 (package! valign)
 #+end_src
@@ -339,29 +499,12 @@ Flash card for studying
   (add-to-list 'super-save-hook-triggers 'find-file-hook))
 #+end_src
 
-** pangu-spacing
-#+begin_src emacs-lisp :tangle packages.el
-(package! pangu-spacing)
-#+end_src
-#+begin_src emacs-lisp :tangle yes
-(use-package! pangu-spacing
-  :hook (after-init . global-pangu-spacing-mode))
-#+end_src
-
 ** evil
 #+begin_src emacs-lisp :tangle yes
-(use-package! evil
-  :config
+(after! evil
   (defalias 'evil-insert-state 'evil-emacs-state)
   (define-key evil-emacs-state-map (kbd "<escape>") 'evil-normal-state)
   (setq evil-emacs-state-cursor 'bar))
-#+end_src
-** format on save
-#+begin_src emacs-lisp :tangle yes
-(setq +format-on-save-enabled-modes
-      '(not sql-mode                      ; sqlformat is currently broken
-            tex-mode                      ; latex-indent is broken
-            latex-mode))
 #+end_src
 ** laas
 #+begin_src emacs-lisp :tangle packages.el
@@ -418,8 +561,7 @@ Flash card for studying
 ** vterm
 *** Configure
 #+begin_src emacs-lisp :tangle yes
-(use-package! vterm
-  :config
+(after! vterm
   (define-key vterm-mode-map (kbd "<C-backspace>")
     (lambda () (interactive) (vterm-send-key (kbd "C-w"))))
   (push (list "find-file-below"
@@ -439,23 +581,9 @@ Flash card for studying
   (add-hook 'vterm-mode-hook
             (lambda ()
               (set (make-local-variable 'buffer-face-mode-face) 'my-vterm-font)
-              (buffer-face-mode t)))
+              (buffer-face-mode t))))
 
-  )
-#+end_src
-** Multi-vterm
-*** Install
-#+begin_src emacs-lisp :tangle packages.el
-(package! multi-vterm)
-#+end_src
-*** Configure
-#+begin_src emacs-lisp :tangle yes
-(use-package! multi-vterm
-	:config
-	(evil-define-key 'normal vterm-mode-map (kbd ",c")       #'multi-vterm)
-	(evil-define-key 'normal vterm-mode-map (kbd ",n")       #'multi-vterm-next)
-	(evil-define-key 'normal vterm-mode-map (kbd ",p")       #'multi-vterm-prev)
-)
+
 #+end_src
 ** undo tree
 *** Configuration
@@ -529,15 +657,6 @@ Flash card for studying
   (setq calendar-week-start-day 0) ; 0:Sunday, 1:Monday
   )
 #+end_src
-** volume
-*** Install
-#+begin_src emacs-lisp :tangle packages.el
-(package! volume)
-#+end_src
-*** Configure
-#+begin_src emacs-lisp :tangle yes
-(use-package! volume)
-#+end_src
 ** dash docs
 #+begin_src emacs-lisp :tangle yes
 (use-package! dash-docs
@@ -558,62 +677,6 @@ Flash card for studying
  "c" "clear-scrollback"
  "ee" "sudo emerge $*"
  )
-#+end_src
-**** Load bash alias
-***** Install
-#+begin_src emacs-lisp :tangle packages.el
-(package! load-bash-alias)
-#+end_src
-***** Configuration
-#+begin_src emacs-lisp :tangle yes
-(use-package! load-bash-alias
-  :config
-  (setq load-bash-alias-bashrc-file "~/.zshrc")
-  (setq load-bash-alias-exclude-aliases-regexp "^alias")
-  )
-#+end_src
-
-*** Autosuggestions
-**** Install
-#+begin_src emacs-lisp :tangle packages.el
-(package! esh-autosuggest)
-#+end_src
-**** Configuration
-#+begin_src emacs-lisp :tangle yes
-(use-package! esh-autosuggest
-  :config
-  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
-  )
-#+end_src
-*** Keybinding
-#+begin_src emacs-lisp :tangle yes
-(after! esh-mode
-  (map! :map eshell-mode-map
-        "C-l"   #'eshell/clear))
-
-#+end_src
-*** eshell-info-banner
-**** Install
-#+begin_src emacs-lisp :tangle packages.el
-(package! eshell-info-banner
-  :recipe (:host github
-           :repo "phundrak/eshell-info-banner.el"))
-#+end_src
-**** Configuration
-#+begin_src emacs-lisp :tangle yes
-(use-package! eshell-info-banner
-  :hook ((eshell-mode . eshell-info-banner)
-         (eshell-banner-load . eshell-info-banner-update-banner)))
-#+end_src
-*** eshell-bookmarks
-#+begin_src emacs-lisp :tangle packages.el
-(package! eshell-bookmark)
-#+end_src
-#+begin_src emacs-lisp :tangle yes
-(use-package! eshell-bookmark
-  :after eshell
-  :config
-  (add-hook 'eshell-mode-hook #'eshell-bookmark-setup))
 #+end_src
 ** ebuild mode
 #+begin_src emacs-lisp :tangle packages.el
@@ -655,8 +718,37 @@ Flash card for studying
 
   )
 #+end_src
-* System
-** Commands
+** COMMENT racket mode
+#+begin_src emacs-lisp :tangle yes
+(after! racket-mode
+  (add-hook! racket-mode
+             #'racket-smart-open-bracket-mode)
+  (add-hook 'racket-mode-hook      #'racket-unicode-input-method-enable)
+  (add-hook 'racket-repl-mode-hook #'racket-unicode-input-method-enable))
+#+end_src
+** COMMENT Assembly
+#+begin_src emacs-lisp :tangle packages.el
+(package! nasm-mode)
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! nasm-mode
+  :config
+  (add-hook 'asm-mode-hook 'nasm-mode)
+  )
+#+end_src
+* EXWM
+Exwm is a window manager based on emacs.
+** Install
+#+begin_src emacs-lisp :tangle packages.el
+(package! exwm)
+(package! xelb)
+(package! desktop-environment)
+(package! xdg)
+#+end_src
+** Configration
+*** Commands
 #+begin_src emacs-lisp :tangle yes
 (defun shutdown ()
   (interactive)
@@ -704,25 +796,14 @@ Flash card for studying
 
 (defun sync-website ()
   (interactive)
-  (cd "~/Project/blog")
-  (delete-directory "~/Project/blog/public" t)
+  (cd "~/Dev/blog")
+  (delete-directory "~/Dev/blog/public" t)
   (shell-command "hugo -D")
-  (shell-command "rsync --archive --compress --verbose --human-readable --progress ~/Project/blog/public/* root@yemouren.com:/var/www/blog/")
+  (shell-command "rsync --archive --compress --verbose --human-readable --progress ~/Dev/blog/public/* root@yemouren.com:/var/www/blog/")
   (cd "~/org/blogs")
   )
 #+end_src
-** Re-tangle codes
-对于在 =~/dotfiles= 内的 org 文件，自动导出代码。
-#+begin_src emacs-lisp :tangle yes
-(defun tangle-dotfiles ()
-  "If the current file is in '~/dotfiles', the code blocks are tangled"
-  (when (equal (file-name-directory buffer-file-name)
-               (concat (getenv "HOME") "/dotfiles/"))
-    (org-babel-tangle)
-    (message "%s tangled" buffer-file-name)))
-(add-hook 'after-save-hook 'tangle-dotfiles)
-#+end_src
-** Envirement varibles
+*** Envirement varibles
 Set proxy
 #+begin_src emacs-lisp :tangle yes
 (setenv "http_proxy" "http://127.0.0.1:7890") ;
@@ -746,29 +827,24 @@ Set winearch
 (setenv "WINEARCH" "win32")
 #+end_src
 
-** Startup tools
+uniform gtk and qt
 #+begin_src emacs-lisp :tangle yes
-(start-process-shell-command "xcompmgr" nil "xcompmgr")
+(setenv "QT_QPA_PLATFORMTHEME" "gtk2")
+#+end_src
+
+*** Startup
+#+begin_src emacs-lisp :tangle yes
+(start-process-shell-command "picom" nil "picom -experimental-backends")
 (start-process-shell-command "nm-applet" nil "nm-applet")
 (start-process-shell-command "fcitx" nil "fcitx")
 (start-process-shell-command "unclutter" nil "unclutter")
 (start-process-shell-command "dunst" nil "dunst")
-(start-process-shell-command "mpd" nil "mpd")
 (start-process-shell-command "clash" nil "clash")
-(start-process-shell-command "espanso" nil "espanso start")
 (shell-command "xrdb -merge ~/.config/x11/Xresources")
 (shell-command "setxkbmap -option 'ctrl:nocaps'")
 (shell-command "xcape -e 'Control_L=Escape'")
 (shell-command "xset r rate 200 100")
 #+end_src
-* EXWM
-Exwm is a window manager based on emacs.
-** Install
-#+begin_src emacs-lisp :tangle packages.el
-(package! exwm)
-(package! xelb)
-#+end_src
-** Configration
 *** Wallpaper
 **** Install
 #+begin_src emacs-lisp :tangle packages.el
@@ -789,92 +865,114 @@ Exwm is a window manager based on emacs.
 #+end_src
 *** Configuration
 #+begin_src emacs-lisp :tangle yes
-(use-package! exwm
-  :config
-  ;; (define-obsolete-function-alias 'exwm-config-default
-  ;;   #'exwm-config-example "27.1")
-  (defun launch-terminal ()
-    (interactive)
-    (+eshell/here))
+(defvar exwm--toggle-workspace 0
+  "Previously selected workspace. Used with `exwm/jump-to-last-exwm'.")
 
+(defun exwm/jump-to-last-exwm ()
+  "Jump to last window."
+  (interactive)
+  (exwm-workspace-switch exwm--toggle-workspace))
+
+(defadvice exwm-workspace-switch
+    (before save-toggle-workspace activate)
+  (setq exwm--toggle-workspace exwm-workspace-current-index))
+
+(defun yeh/exwm-input-line-mode ()
+  "Set exwm window to line-mode and show mode line."
+  (call-interactively #'exwm-input-grab-keyboard)
+  (exwm-layout-show-mode-line))
+
+(defun yeh/exwm-input-char-mode ()
+  "Set exwm window to char-mode and hide mode line."
+  (call-interactively #'exwm-input-release-keyboard)
+  (exwm-layout-hide-mode-line))
+
+(defun yeh/exwm-input-toggle-mode ()
+  "Toggle between line- and char-mode."
+  (interactive)
+  (with-current-buffer (window-buffer)
+    (when (eq major-mode 'exwm-mode)
+      (if (equal (second (second mode-line-process)) "line")
+          (yeh/exwm-input-char-mode)
+        (yeh/exwm-input-line-mode)))))
+
+(use-package! xelb
+  :if (display-graphic-p))
+
+(use-package! exwm
+  :if (display-graphic-p)
+  :init
   (setq exwm-workspace-number 5)
-  ;; Make class name the buffer name
+  (setq mouse-autoselect-window t
+        focus-follows-mouse t)
+  (setq window-divider-default-right-width 1)
+  :config
+  (require 'exwm-config)
+  (setq exwm-workspace-index-map
+        (lambda (index) (number-to-string (1+ index))))
+  (progn
+    (exwm-input-set-key (kbd "<s-tab>")  #'exwm/jump-to-last-exwm)
+    (exwm-input-set-key (kbd "s-w")  #'(lambda ()
+                                         (interactive)
+                                         (start-process-shell-command
+                                          "Brave-browser" nil "brave-bin")))
+    (exwm-input-set-key (kbd "s-d") #'(lambda (command)
+                                        (interactive (list (read-shell-command "Command: ")))
+                                        (start-process-shell-command command nil command)))
+    (exwm-input-set-key (kbd "s-=") #'desktop-environment-volume-increment)
+    (exwm-input-set-key (kbd "s--") #'desktop-environment-volume-decrement)
+    (exwm-input-set-key (kbd "s-i") #'yeh/exwm-input-toggle-mode)
+    (mapcar (lambda (i)
+              (exwm-input-set-key (kbd (format "s-%d" i))
+                                  #'(lambda ()
+                                      (interactive)
+                                      (exwm-workspace-switch-create (1- i)))))
+            (number-sequence 0 9)))
+
   (add-hook 'exwm-update-class-hook
             (lambda ()
               (exwm-workspace-rename-buffer exwm-class-name)))
 
-  (setq exwm-input-global-keys
-        `(
-          ;; 's-r': Reset (to line-mode).
-          ([?\s-r] . exwm-reset)
-          ;; 's-w': Switch workspace.
-          ([?\s-t] . exwm-workspace-switch)
-          ;; 's-d': Launch application.
-          ([?\s-d] . (lambda (command)
-                       (interactive (list (read-shell-command "$ ")))
-                       (start-process-shell-command command nil command)))
-          ([?\s-=] . volume-raise)
-          ([?\s--] . volume-lower)
+  (add-hook 'exwm-manage-finish-hook
+            (lambda () (call-interactively #'exwm-input-release-keyboard)
+              (exwm-layout-hide-mode-line)))
 
-          ([?\s-w] . (lambda ()
-                       (interactive)
-                       (start-process-shell-command "Brave-browser" nil "brave-bin")))
+  (add-hook 'exwm-floating-setup-hook
+            (lambda ()
+              (setq floating-mode-line nil)))
+  ;; Make buffer name more meaningful
+  (add-hook 'exwm-update-class-hook
+            (lambda () (exwm-workspace-rename-buffer exwm-class-name)))
+  (add-hook 'exwm-update-title-hook
+            (lambda ()
+              (exwm-workspace-rename-buffer exwm-title)))
+  (exwm-enable))
 
-          ;; 's-N': Switch to certain workspace.
-          ,@(mapcar (lambda (i)
-                      `(,(kbd (format "s-%d" i)) .
-                        (lambda ()
-                          (interactive)
-                          (exwm-workspace-switch-create ,i))))
-                    (number-sequence 0 9))))
-  (let ((workspace-numbers (number-sequence 0 9))
-        (keys ")!@#$%^&*("))
-    (seq-doseq (num workspace-numbers)
-                (let* ((idx num)
-                       (key (aref keys idx)))
-                  (exwm-input-set-key (kbd (format "s-%c" key))
-                                      `(lambda ()
-                                         (interactive)
-                                         (exwm-workspace-move-window , num)))))
-    )
-  ;; Line-editing shortcuts
-  (setq exwm-input-simulation-keys
-        '(([?\C-b] . [left])
-          ([?\C-f] . [right])
-          ([?\C-p] . [up])
-          ([?\C-n] . [down])
-          ([?\C-a] . [home])
-          ([?\C-e] . [end])
-          ([?\M-v] . [prior])
-          ([?\C-v] . [next])
-          ([?\C-d] . [delete])
-          ([?\C-k] . [S-end delete])))
-  ;; Enable EXWM
-  (exwm-enable)
+(use-package! exwm-systemtray
+  :if (display-graphic-p)
+  :after exwm
+  :config
+  (exwm-systemtray-enable))
 
-  ;; maps
-  (map! :desc "Open Terminal"
-        :g "s-<return>"  'launch-terminal)
+(use-package! desktop-environment
+  :if (display-graphic-p)
+  :after exwm
+  :init
+  (setq desktop-environment-screenshot-directory "~/Pictures/screenshot"
+        desktop-environment-update-exwm-global-keys :global)
+  :config
+  (desktop-environment-mode))
 
-(map! :desc "Screenshot fullscreen"
-      :g "<print>" 'screenshot-full
-      :g "S-<print>" 'screenshot-select
-      :g "C-<print>" 'screenshot-current-window
-      )
-)
+(use-package! xdg
+  :if (display-graphic-p)
+  :commands (xdg-config-dirs xdg-config-home xdg-desktop-read-file))
 #+end_src
-*** Window Class
+*** COMMENT Window Class
 #+begin_src emacs-lisp :tangle yes
 (setq exwm-manage-configurations
-      '(((equal exwm-class-name "mpv")
-         floating t
-         floating-mode-line nil
-         width 0.6
-         height 0.8
-         )
-        ((equal exwm-class-name "Brave-browser")
-         workspace 1
-         char-mode t)
+      '(((equal exwm-class-name "Brave-browser"
+                 workspace 1
+                 char-mode t))
         ((equal exwm-class-name "Google-chrome")
          char-mode t)
         ((equal exwm-class-name "phototshop.exe")
@@ -887,9 +985,7 @@ Exwm is a window manager based on emacs.
          floating t
          floating-mode-line nil
          width 0.4
-         height 0.5)
-      )
-    )
+         height 0.5)))
 
 (add-hook 'exwm-floating-setup-hook
           (lambda ()
@@ -898,7 +994,7 @@ Exwm is a window manager based on emacs.
 ;; Make buffer name more meaningful
 (add-hook 'exwm-update-class-hook
           (lambda ()
-          (exwm-workspace-rename-buffer exwm-class-name)))
+           (exwm-workspace-rename-buffer exwm-class-name)))
 #+end_src
 
 ** Start Exwm
@@ -908,12 +1004,9 @@ Exwm is a window manager based on emacs.
 (exwm-enable)
 (require 'exwm-systemtray)
 (exwm-systemtray-enable)
-(start-process-shell-command "dropbox" nil "dropbox start")
 #+end_src
-* Links
+* Reference
 + Doom emacs homepage:
   [[https://github.com/hlissner/doom-emacs][GitHub - hlissner/doom-emacs: An Emacs framework for the stubborn martian hacker]]
 + My configuration of doom emacs:
-   [[https://github.com/ypcodes/doom-config][GitHub - ypcodes/doom-config: my configuration of doom emacs]]
-+ My blog homepage:
-  [[https://blog.yemouren.com/][宿云间 — 君不见周南歌汉广，天教夫子休乔木]]
+  [[https://github.com/ypcodes/doom-config][GitHub - ypcodes/doom-config: my configuration of doom emacs]]
