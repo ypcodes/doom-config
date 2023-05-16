@@ -54,6 +54,3 @@
            :files ("*")
            :post-build (progn
                          (shell-command "python install-eaf.py"))))
-
-(package! el2org)
-(package! ox-gfm)

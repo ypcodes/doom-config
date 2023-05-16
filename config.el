@@ -28,6 +28,7 @@
       ;; scroll-preserve-screen-position 'always     ; Don't have `point' jump around
       scroll-margin 2                             ; It's nice to maintain a little margin
       confirm-kill-processes nil                  ; exit emacs without notification when use EAF
+      confirm-kill-emacs nil
       display-time-default-load-average nil)      ; I don't think I've ever found this useful
 
 (display-time-mode 1)                             ; Enable time in the mode-line
