@@ -48,3 +48,12 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
+
+(package! eaf
+  :recipe (:host github :repo "emacs-eaf/emacs-application-framework"
+           :files ("*")
+           :post-build (progn
+                         (shell-command "python install-eaf.py"))))
+
+(package! el2org)
+(package! ox-gfm)
