@@ -54,3 +54,13 @@
            :files ("*")
            :post-build (progn
                          (shell-command "python install-eaf.py"))))
+
+(package! calctex :recipe (:host github :repo "johnbcoughlin/calctex"
+                           :files ("*.el" "calctex/*.el" "calctex-contrib/*.el" "org-calctex/*.el" "vendor")))
+
+(package! org-transclusion :recipe (:host github :repo "nobiot/org-transclusion"))
+
+(package! org-pandoc-import
+  :recipe (:host github
+           :repo "tecosaur/org-pandoc-import"
+           :files ("*.el" "filters" "preprocessors")))

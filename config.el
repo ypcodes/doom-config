@@ -530,6 +530,7 @@ in hooks that call functions with arguments."
   (require 'eaf-browser)
   (require 'eaf-pdf-viewer)
   (require 'eaf-evil)
+  (setq eaf-evil-leader-key "M-SPC")
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
   (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
@@ -539,3 +540,77 @@ in hooks that call functions with arguments."
   (setq eaf-proxy-host "127.0.0.1")
   (setq eaf-proxy-port "7890")
 )
+
+(use-package! calctex
+  :commands calctex-mode
+  :init
+  (add-hook 'calc-mode-hook #'calctex-mode)
+  :config
+  (setq calctex-additional-latex-packages "
+\\usepackage[usenames]{xcolor}
+\\usepackage{soul}
+\\usepackage{adjustbox}
+\\usepackage{amsmath}
+\\usepackage{amssymb}
+\\usepackage{siunitx}
+\\usepackage{cancel}
+\\usepackage{mathtools}
+\\usepackage{mathalpha}
+\\usepackage{xparse}
+\\usepackage{arevmath}"
+        calctex-additional-latex-macros
+        (concat calctex-additional-latex-macros
+                "\n\\let\\evalto\\Rightarrow"))
+  (defadvice! no-messaging-a (orig-fn &rest args)
+    :around #'calctex-default-dispatching-render-process
+    (let ((inhibit-message t) message-log-max)
+      (apply orig-fn args)))
+  ;; Fix hardcoded dvichop path (whyyyyyyy)
+  (let ((vendor-folder (concat (file-truename doom-local-dir)
+                               "straight/"
+                               (format "build-%s" emacs-version)
+                               "/calctex/vendor/")))
+    (setq calctex-dvichop-sty (concat vendor-folder "texd/dvichop")
+          calctex-dvichop-bin (concat vendor-folder "texd/dvichop")))
+  (unless (file-exists-p calctex-dvichop-bin)
+    (message "CalcTeX: Building dvichop binary")
+    (let ((default-directory (file-name-directory calctex-dvichop-bin)))
+      (call-process "make" nil nil nil))))
+
+(setq calc-angle-mode 'rad  ; radians are rad
+      calc-symbolic-mode t) ; keeps expressions like \sqrt{2} irrational for as long as possible
+
+(after! text-mode
+  (add-hook! 'text-mode-hook
+    (unless (derived-mode-p 'org-mode)
+      ;; Apply ANSI color codes
+      (with-silent-modifications
+        (ansi-color-apply-on-region (point-min) (point-max) t)))))
+
+(use-package! org-transclusion
+  :commands org-transclusion-mode
+  :init
+  (map! :after org :map org-mode-map
+        "<f12>" #'org-transclusion-mode))
+
+(use-package! org-pandoc-import
+  :after org)
+
+(map! :map evil-org-mode-map
+      :after evil-org
+      :n "g <up>" #'org-backward-heading-same-level
+      :n "g <down>" #'org-forward-heading-same-level
+      :n "g <left>" #'org-up-element
+      :n "g <right>" #'org-down-element)
+
+(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+
+(defadvice! org-edit-latex-emv-after-insert ()
+  :after #'org-cdlatex-environment-indent
+  (org-edit-latex-environment))
+
+(setq org-re-reveal-theme "white"
+      org-re-reveal-transition "slide"
+      org-re-reveal-plugins '(markdown notes math search zoom))
+
+(setq org-beamer-theme "[progressbar=foot]metropolis")
