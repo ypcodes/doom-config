@@ -48,8 +48,3 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
-
-(package! paper :recipe (:host github :repo "ymarco/paper-mode"
-                         :files ("*.el" ".so")
-                         :pre-build "make"
-                         ))
