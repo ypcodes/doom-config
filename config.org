@@ -85,8 +85,6 @@ etc).
 You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 they are implemented.
 
-
-
 * Better defaults
 Emacs-state instead of insert-state
 #+begin_src emacs-lisp
