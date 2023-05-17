@@ -10,10 +10,11 @@
 
 (setq org-directory "~/org/")
 
-(after! evil
-  (defalias 'evil-insert-state 'evil-emacs-state)
-  (define-key evil-emacs-state-map (kbd "<escape>") 'evil-normal-state)
-  (setq evil-emacs-state-cursor 'bar))
+(if (display-graphic-p)
+    (after! evil
+      (defalias 'evil-insert-state 'evil-emacs-state)
+      (define-key evil-emacs-state-map (kbd "<escape>") 'evil-normal-state)
+      (setq evil-emacs-state-cursor 'bar)))
 
 (setq-default
  delete-by-moving-to-trash t                      ; Delete files to trash
@@ -64,6 +65,10 @@
       "C-<down>"       #'+evil/window-move-down
       "C-<up>"         #'+evil/window-move-up
       "C-<right>"      #'+evil/window-move-right)
+
+(after! browse-url
+  (setq browse-url-browser-function 'eaf-open-browser
+        browse-url-generic-program "eaf-open-browser"))
 
 (defvar fancy-splash-image-directory
   (expand-file-name "misc/splash-images/" doom-private-dir)
@@ -514,7 +519,7 @@ in hooks that call functions with arguments."
 
 (use-package! eaf
   :defer t
-  :commands (eaf-open-browser eaf-open eaf-search-it eaf-open-browser-with-history)
+  :commands (eaf-open-browser eaf-open eaf-search-it eaf-open-browser-with-history eaf-open-browser-other-window)
   :hook (eaf-mode . centaur-tabs-mode)
   :custom
   (eaf-browser-continue-where-left-off t)
@@ -614,3 +619,10 @@ in hooks that call functions with arguments."
       org-re-reveal-plugins '(markdown notes math search zoom))
 
 (setq org-beamer-theme "[progressbar=foot]metropolis")
+
+(after! +lookup
+  (set-lookup-handlers! 'eaf-open-browser-other-window
+                        :modes '(emacs-lisp-mode
+                                 c++-mode
+                                 markdown-mode
+                                 org-mode)))
