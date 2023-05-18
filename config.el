@@ -624,10 +624,10 @@ in hooks that call functions with arguments."
 
 (after! +lookup
   (set-lookup-handlers! 'eaf-open-browser-other-window
-                        :modes '(emacs-lisp-mode
-                                 c++-mode
-                                 markdown-mode
-                                 org-mode)))
+    :modes '(emacs-lisp-mode
+             c++-mode
+             markdown-mode
+             org-mode)))
 
 (use-package! chatgpt-shell
   :defer t
@@ -640,3 +640,48 @@ in hooks that call functions with arguments."
       ;; Remove the newline character from the end of the string
       (substring (buffer-string) 0 -1)))
   (setq chatgpt-shell-openai-key (read-token-from-file "~/.config/tokens/openai-key.txt")))
+
+(defun indent-entire-buffer ()
+  "Indent the entire buffer"
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defun copy-file-path-to-clipboard ()
+  "Copy the file path of the current buffer to the clipboard"
+  (interactive)
+  (let ((file-path (buffer-file-name)))
+    (when file-path
+      (kill-new file-path)
+      (message "Copied file path: %s" file-path))))
+
+(defun copy-file-name ()
+  "Copy the name of the current buffer's file."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (kill-new (when filename (file-name-nondirectory filename)))
+    (message "Copied filename to clipboard.")))
+
+(defun copy-buffer-name ()
+  "Copy the name of the current buffer to the clipboard."
+  (interactive)
+  (kill-new (buffer-name))
+  (message "Copied buffer name to clipboard."))
+
+(defun copy-region-without-newline ()
+  "Copy the region without the trailing newline"
+  (interactive)
+  (if (use-region-p)
+      (let ((end (copy-marker (region-end))))
+        (save-excursion
+          (goto-char (region-end))
+          (when (and (bolp) (not (bobp)))
+            (backward-char))
+          (kill-region (region-beginning) (1+ (marker-position end))))
+        (goto-char (region-beginning))
+        (insert (substring (current-kill 0) 0 -1)))
+    (message "No region is active")))
+
+(defun insert-timestamp ()
+  "Insert the current timestamp at point."
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
