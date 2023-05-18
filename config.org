@@ -615,6 +615,7 @@ in hooks that call functions with arguments."
         :desc "Previous buffer" :ng "p" #'previous-buffer
         :desc "Set theme" :ng "t" #'consult-theme
         :desc "Quit" :ng "Q" #'save-buffers-kill-terminal
+        :desc "Search" :ng "o" #'eaf-open-browser-with-history
         :desc "Show keybindings" :ng "h" (cmd! (which-key-show-keymap '+doom-dashboard-mode-map))))
 #+end_src
 
@@ -718,15 +719,15 @@ Setup End
   (setq eaf-browser-default-search-engine "duckduckgo")
   (setq eaf-proxy-type "http")
   (setq eaf-proxy-host "127.0.0.1")
-  (setq eaf-proxy-port "7890")
-)
+  (setq eaf-proxy-port "7890"))
 #+end_src
 * Calulator
 ** CalcTex
 For prettier lookup
 #+begin_src emacs-lisp
 (use-package! calctex
-  :commands calctex-mode
+  :defer t
+  :commands (calctex-mode calc)
   :init
   (add-hook 'calc-mode-hook #'calctex-mode)
   :config
@@ -778,9 +779,15 @@ For prettier lookup
         (ansi-color-apply-on-region (point-min) (point-max) t)))))
 #+end_src
 * Org mode
+** Org mode itself
+#+begin_src emacs-lisp :tangle no
+(use-package! org
+  :defer t)
+#+end_src
 ** Transclusion
 #+begin_src emacs-lisp
 (use-package! org-transclusion
+  :after org
   :commands org-transclusion-mode
   :init
   (map! :after org :map org-mode-map
@@ -831,4 +838,18 @@ want to edit them afterwards though, so let's make that happen by default.
                                  c++-mode
                                  markdown-mode
                                  org-mode)))
+#+end_src
+* Chatgpt Shell
+#+begin_src emacs-lisp
+(use-package! chatgpt-shell
+  :defer t
+  :commands (chatgpt-shell dall-e-shell)
+  :init
+  (defun read-token-from-file (file-name)
+    "Reads the token from FILE-NAME and returns it as a string."
+    (with-temp-buffer
+      (insert-file-contents file-name)
+      ;; Remove the newline character from the end of the string
+      (substring (buffer-string) 0 -1)))
+  (setq chatgpt-shell-openai-key (read-token-from-file "~/.config/tokens/openai-key.txt")))
 #+end_src

@@ -463,6 +463,7 @@ in hooks that call functions with arguments."
         :desc "Previous buffer" :ng "p" #'previous-buffer
         :desc "Set theme" :ng "t" #'consult-theme
         :desc "Quit" :ng "Q" #'save-buffers-kill-terminal
+        :desc "Search" :ng "o" #'eaf-open-browser-with-history
         :desc "Show keybindings" :ng "h" (cmd! (which-key-show-keymap '+doom-dashboard-mode-map))))
 
 (add-transient-hook! #'+doom-dashboard-mode (+doom-dashboard-setup-modified-keymap))
@@ -543,11 +544,11 @@ in hooks that call functions with arguments."
   (setq eaf-browser-default-search-engine "duckduckgo")
   (setq eaf-proxy-type "http")
   (setq eaf-proxy-host "127.0.0.1")
-  (setq eaf-proxy-port "7890")
-)
+  (setq eaf-proxy-port "7890"))
 
 (use-package! calctex
-  :commands calctex-mode
+  :defer t
+  :commands (calctex-mode calc)
   :init
   (add-hook 'calc-mode-hook #'calctex-mode)
   :config
@@ -593,6 +594,7 @@ in hooks that call functions with arguments."
         (ansi-color-apply-on-region (point-min) (point-max) t)))))
 
 (use-package! org-transclusion
+  :after org
   :commands org-transclusion-mode
   :init
   (map! :after org :map org-mode-map
@@ -626,3 +628,15 @@ in hooks that call functions with arguments."
                                  c++-mode
                                  markdown-mode
                                  org-mode)))
+
+(use-package! chatgpt-shell
+  :defer t
+  :commands (chatgpt-shell dall-e-shell)
+  :init
+  (defun read-token-from-file (file-name)
+    "Reads the token from FILE-NAME and returns it as a string."
+    (with-temp-buffer
+      (insert-file-contents file-name)
+      ;; Remove the newline character from the end of the string
+      (substring (buffer-string) 0 -1)))
+  (setq chatgpt-shell-openai-key (read-token-from-file "~/.config/tokens/openai-key.txt")))
