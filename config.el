@@ -544,9 +544,9 @@ in hooks that call functions with arguments."
   (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding)
   (setq eaf-browser-default-search-engine "duckduckgo")
-  ;; (setq eaf-proxy-type "http")
-  ;; (setq eaf-proxy-host "127.0.0.1")
-  ;; (setq eaf-proxy-port "7890")
+  (setq eaf-proxy-type "http")
+  (setq eaf-proxy-host "127.0.0.1")
+  (setq eaf-proxy-port "7890")
   )
 
 (use-package! calctex
