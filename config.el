@@ -1,14 +1,15 @@
 (setq user-full-name "Peng Ye"
-      user-mail-address "yemouren@protonmail.com")
+      user-mail-address "yepeng230@gmail.com")
 
-(setq doom-font (font-spec :family "Roboto Mono" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 17))
+(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 17))
 
 (setq doom-theme 'doom-vibrant)
 
 (setq display-line-numbers-type 'relative)
 
-(setq org-directory "~/org/")
+(setq org-directory "~/org/"
+      org-roam-directory "~/org/roam")
 
 (if (display-graphic-p)
     (after! evil
@@ -520,6 +521,7 @@ in hooks that call functions with arguments."
 
 (use-package! eaf
   :defer t
+  :load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework"
   :commands (eaf-open-browser eaf-open eaf-search-it eaf-open-browser-with-history eaf-open-browser-other-window)
   :hook (eaf-mode . centaur-tabs-mode)
   :custom
@@ -542,9 +544,10 @@ in hooks that call functions with arguments."
   (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding)
   (setq eaf-browser-default-search-engine "duckduckgo")
-  (setq eaf-proxy-type "http")
-  (setq eaf-proxy-host "127.0.0.1")
-  (setq eaf-proxy-port "7890"))
+  ;; (setq eaf-proxy-type "http")
+  ;; (setq eaf-proxy-host "127.0.0.1")
+  ;; (setq eaf-proxy-port "7890")
+  )
 
 (use-package! calctex
   :defer t
@@ -628,18 +631,6 @@ in hooks that call functions with arguments."
              c++-mode
              markdown-mode
              org-mode)))
-
-(use-package! chatgpt-shell
-  :defer t
-  :commands (chatgpt-shell dall-e-shell)
-  :init
-  (defun read-token-from-file (file-name)
-    "Reads the token from FILE-NAME and returns it as a string."
-    (with-temp-buffer
-      (insert-file-contents file-name)
-      ;; Remove the newline character from the end of the string
-      (substring (buffer-string) 0 -1)))
-  (setq chatgpt-shell-openai-key (read-token-from-file "~/.config/tokens/openai-key.txt")))
 
 (defun indent-entire-buffer ()
   "Indent the entire buffer"

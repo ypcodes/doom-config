@@ -1,6 +1,5 @@
-# Created 2023-05-16 二 14:36
-#+title: Doom Configurations
-#+author: Peng Ye
+#+title: My Doom Emacs Configuration
+
 Place your private configuration here! Remember, you do need to run 'doom
 sync' after modifying this file!
 
@@ -9,7 +8,7 @@ Some functionality uses this to identify you, e.g. GPG configuration, email
 clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
 (setq user-full-name "Peng Ye"
-      user-mail-address "yemouren@protonmail.com")
+      user-mail-address "yepeng230@gmail.com")
 #+end_src
 
 Doom exposes five (optional) variables for controlling fonts in Doom:
@@ -25,8 +24,8 @@ See 'C-h v doom-font' for documentation and more examples of what they
 accept. For example:
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Roboto Mono" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 17))
+(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 17))
 #+end_src
 
 If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -49,7 +48,8 @@ numbers are disabled. For relative line numbers, set this to `relative'.
 If you use `org' and don't want your org files in the default location below,
 change `org-directory'. It must be set before org loads!
 #+begin_src emacs-lisp
-(setq org-directory "~/org/")
+(setq org-directory "~/org/"
+      org-roam-directory "~/org/roam")
 #+end_src
 
 
@@ -695,6 +695,7 @@ Setup End
 #+begin_src emacs-lisp
 (use-package! eaf
   :defer t
+  :load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework"
   :commands (eaf-open-browser eaf-open eaf-search-it eaf-open-browser-with-history eaf-open-browser-other-window)
   :hook (eaf-mode . centaur-tabs-mode)
   :custom
@@ -717,9 +718,10 @@ Setup End
   (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
   (eaf-bind-key nil "M-q" eaf-browser-keybinding)
   (setq eaf-browser-default-search-engine "duckduckgo")
-  (setq eaf-proxy-type "http")
-  (setq eaf-proxy-host "127.0.0.1")
-  (setq eaf-proxy-port "7890"))
+  ;; (setq eaf-proxy-type "http")
+  ;; (setq eaf-proxy-host "127.0.0.1")
+  ;; (setq eaf-proxy-port "7890")
+  )
 #+end_src
 * Calulator
 ** CalcTex
@@ -838,20 +840,6 @@ want to edit them afterwards though, so let's make that happen by default.
              c++-mode
              markdown-mode
              org-mode)))
-#+end_src
-* Chatgpt Shell
-#+begin_src emacs-lisp
-(use-package! chatgpt-shell
-  :defer t
-  :commands (chatgpt-shell dall-e-shell)
-  :init
-  (defun read-token-from-file (file-name)
-    "Reads the token from FILE-NAME and returns it as a string."
-    (with-temp-buffer
-      (insert-file-contents file-name)
-      ;; Remove the newline character from the end of the string
-      (substring (buffer-string) 0 -1)))
-  (setq chatgpt-shell-openai-key (read-token-from-file "~/.config/tokens/openai-key.txt")))
 #+end_src
 * Useful functions
 ** Indent current buffer
