@@ -1,8 +1,8 @@
 (setq user-full-name "Peng Ye"
       user-mail-address "yepeng230@gmail.com")
 
-(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 17))
+(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 18)
+      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 18))
 
 (setq doom-theme 'doom-vibrant)
 
@@ -645,6 +645,7 @@ in hooks that call functions with arguments."
 (unless (boundp 'org-export-latex-classes)
   (setq org-export-latex-classes nil))
 
+(with-eval-after-load 'ox-latex
 (add-to-list 'org-latex-classes
              '("org-article"
 	       "\\documentclass{article}
@@ -773,8 +774,14 @@ marginparsep=7pt, marginparwidth=.6in}
         ("rulesepcolor" "\\color{comdil}")
         ("framexleftmargin" "10mm")
         ))
+)
 
 (setq org-beamer-theme "[progressbar=foot]metropolis")
+
+(use-package! org-modern
+  :hook (org-mode . global-org-modern-mode)
+  :config
+  (setq org-modern-label-border 0.3))
 
 (after! +lookup
   (set-lookup-handlers! 'eaf-open-browser-other-window
@@ -782,48 +789,3 @@ marginparsep=7pt, marginparwidth=.6in}
              c++-mode
              markdown-mode
              org-mode)))
-
-(defun indent-entire-buffer ()
-  "Indent the entire buffer"
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(defun copy-file-path-to-clipboard ()
-  "Copy the file path of the current buffer to the clipboard"
-  (interactive)
-  (let ((file-path (buffer-file-name)))
-    (when file-path
-      (kill-new file-path)
-      (message "Copied file path: %s" file-path))))
-
-(defun copy-file-name ()
-  "Copy the name of the current buffer's file."
-  (interactive)
-  (let ((filename (buffer-file-name)))
-    (kill-new (when filename (file-name-nondirectory filename)))
-    (message "Copied filename to clipboard.")))
-
-(defun copy-buffer-name ()
-  "Copy the name of the current buffer to the clipboard."
-  (interactive)
-  (kill-new (buffer-name))
-  (message "Copied buffer name to clipboard."))
-
-(defun copy-region-without-newline ()
-  "Copy the region without the trailing newline"
-  (interactive)
-  (if (use-region-p)
-      (let ((end (copy-marker (region-end))))
-        (save-excursion
-          (goto-char (region-end))
-          (when (and (bolp) (not (bobp)))
-            (backward-char))
-          (kill-region (region-beginning) (1+ (marker-position end))))
-        (goto-char (region-beginning))
-        (insert (substring (current-kill 0) 0 -1)))
-    (message "No region is active")))
-
-(defun insert-timestamp ()
-  "Insert the current timestamp at point."
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %H:%M:%S")))

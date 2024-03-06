@@ -24,8 +24,8 @@ See 'C-h v doom-font' for documentation and more examples of what they
 accept. For example:
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 17))
+(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 18)
+      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 18))
 #+end_src
 
 If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -857,6 +857,7 @@ want to edit them afterwards though, so let's make that happen by default.
 (unless (boundp 'org-export-latex-classes)
   (setq org-export-latex-classes nil))
 
+(with-eval-after-load 'ox-latex
 (add-to-list 'org-latex-classes
              '("org-article"
 	       "\\documentclass{article}
@@ -985,10 +986,18 @@ marginparsep=7pt, marginparwidth=.6in}
         ("rulesepcolor" "\\color{comdil}")
         ("framexleftmargin" "10mm")
         ))
+)
 #+end_src
 ** Beamer
 #+begin_src emacs-lisp
 (setq org-beamer-theme "[progressbar=foot]metropolis")
+#+end_src
+** Org Modern
+#+begin_src emacs-lisp
+(use-package! org-modern
+  :hook (org-mode . global-org-modern-mode)
+  :config
+  (setq org-modern-label-border 0.3))
 #+end_src
 * Lookup setup
 ** Dash-docs
@@ -999,62 +1008,4 @@ marginparsep=7pt, marginparwidth=.6in}
              c++-mode
              markdown-mode
              org-mode)))
-#+end_src
-* Useful functions
-** Indent current buffer
-#+begin_src emacs-lisp
-(defun indent-entire-buffer ()
-  "Indent the entire buffer"
-  (interactive)
-  (indent-region (point-min) (point-max)))
-#+end_src
-** Copy file path to clipboard
-#+begin_src emacs-lisp
-(defun copy-file-path-to-clipboard ()
-  "Copy the file path of the current buffer to the clipboard"
-  (interactive)
-  (let ((file-path (buffer-file-name)))
-    (when file-path
-      (kill-new file-path)
-      (message "Copied file path: %s" file-path))))
-#+end_src
-** Copy file name
-#+begin_src emacs-lisp
-(defun copy-file-name ()
-  "Copy the name of the current buffer's file."
-  (interactive)
-  (let ((filename (buffer-file-name)))
-    (kill-new (when filename (file-name-nondirectory filename)))
-    (message "Copied filename to clipboard.")))
-#+end_src
-** Copy buffer name
-#+begin_src emacs-lisp
-(defun copy-buffer-name ()
-  "Copy the name of the current buffer to the clipboard."
-  (interactive)
-  (kill-new (buffer-name))
-  (message "Copied buffer name to clipboard."))
-#+end_src
-** Copy region without new line
-#+begin_src emacs-lisp
-(defun copy-region-without-newline ()
-  "Copy the region without the trailing newline"
-  (interactive)
-  (if (use-region-p)
-      (let ((end (copy-marker (region-end))))
-        (save-excursion
-          (goto-char (region-end))
-          (when (and (bolp) (not (bobp)))
-            (backward-char))
-          (kill-region (region-beginning) (1+ (marker-position end))))
-        (goto-char (region-beginning))
-        (insert (substring (current-kill 0) 0 -1)))
-    (message "No region is active")))
-#+end_src
-** Insert timestamp
-#+begin_src emacs-lisp
-(defun insert-timestamp ()
-  "Insert the current timestamp at point."
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
 #+end_src
