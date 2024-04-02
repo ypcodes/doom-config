@@ -829,7 +829,7 @@ marginparsep=7pt, marginparwidth=.6in}
   (define-key minibuffer-local-map (kbd "C-<return>") 'pyim-cregexp-convert-at-point)
 
   ;; 设置 pyim 默认使用的输入法策略，我使用全拼。
-  (pyim-default-scheme 'pyim-shuangpin)
+  (pyim-default-scheme 'ziranma-shuangpin)
   ;; (pyim-default-scheme 'wubi)
   ;; (pyim-default-scheme 'cangjie)
 
@@ -842,10 +842,7 @@ marginparsep=7pt, marginparwidth=.6in}
   ;; 2. 光标前是汉字字符时，才能输入中文。
   ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
   (setq-default pyim-english-input-switch-functions
-                '(pyim-probe-dynamic-english
-                  pyim-probe-isearch-mode
-                  pyim-probe-program-mode
-                  pyim-probe-org-structure-template))
+                '(pyim-probe-org-structure-template))
 
   (setq-default pyim-punctuation-half-width-functions
                 '(pyim-probe-punctuation-line-beginning
