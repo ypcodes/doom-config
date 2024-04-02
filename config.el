@@ -1,10 +1,15 @@
 (setq user-full-name "Peng Ye"
       user-mail-address "yepeng230@gmail.com")
 
-(setq doom-font (font-spec :family "Mononoki Nerd Font" :size 18)
-      doom-variable-pitch-font (font-spec :family "DejaVu Sans Mono" :size 18))
+(defun peng/set-fonts ()
+  (interactive)
+  (set-face-attribute 'default nil :font (font-spec :family "GoMono Nerd Font" :size 20))
+  (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji" :size 18) nil 'prepend)
+  (set-fontset-font t '(#x2ff0 . #x9ffc) (font-spec :family "Noto Sans CJK SC" :size 20) nil 'prepend)
+  )
+(add-hook! 'window-setup-hook :append 'peng/set-fonts)
 
-(setq doom-theme 'doom-vibrant)
+;;(setq doom-theme 'doom-tokyo-night)
 
 (setq display-line-numbers-type 'relative)
 
@@ -25,9 +30,9 @@
 (setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
       evil-want-fine-undo t                       ; By default while in insert all changes are one big blob. Be more granular
       auto-save-default t                         ; Nobody likes to loose work, I certainly don't
-      truncate-string-ellipsis "…"                ; Unicode ellispis are nicer than "...", and also save /precious/ space
+      truncate-string-ellipsis ""                ; Unicode ellispis are nicer than "...", and also save /precious/ space
       password-cache-expiry nil                   ; I can trust my computers ... can't I?
-      ;; scroll-preserve-screen-position 'always     ; Don't have `point' jump around
+      scroll-preserve-screen-position 'always     ; Don't have `point' jump around
       scroll-margin 2                             ; It's nice to maintain a little margin
       confirm-kill-processes nil                  ; exit emacs without notification when use EAF
       confirm-kill-emacs nil
@@ -70,6 +75,12 @@
 (after! browse-url
   (setq browse-url-browser-function 'eaf-open-browser
         browse-url-generic-program "eaf-open-browser"))
+
+(setq window-divider-default-right-width 24
+      window-divider-default-places 'right-only
+      x-underline-at-descent-line t)
+
+(setq doom-theme 'catppuccin)
 
 (defvar fancy-splash-image-directory
   (expand-file-name "misc/splash-images/" doom-private-dir)
@@ -522,7 +533,6 @@ in hooks that call functions with arguments."
 (use-package! eaf
   :defer t
   :load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework"
-  :commands (eaf-open-browser eaf-open eaf-search-it eaf-open-browser-with-history eaf-open-browser-other-window)
   :hook (eaf-mode . centaur-tabs-mode)
   :custom
   (eaf-browser-continue-where-left-off t)
@@ -537,8 +547,9 @@ in hooks that call functions with arguments."
   :config
   (require 'eaf-browser)
   (require 'eaf-pdf-viewer)
+  (require 'eaf-pyqterminal)
   (require 'eaf-evil)
-  (setq eaf-evil-leader-key "M-SPC")
+  (setq eaf-evil-leader-key "C-SPC")
   (defalias 'browse-web #'eaf-open-browser)
   (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
   (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
@@ -789,3 +800,60 @@ marginparsep=7pt, marginparwidth=.6in}
              c++-mode
              markdown-mode
              org-mode)))
+
+(use-package! pyim
+  :config
+  (require 'pyim-cregexp-utils)
+  (require 'pyim-liberime)
+  ;; 如果使用 popup page tooltip, 就需要加载 popup 包。
+  ;; (require 'popup nil t)
+  ;; (setq pyim-page-tooltip 'popup)
+
+  ;; 如果使用 pyim-dregcache dcache 后端，就需要加载 pyim-dregcache 包。
+  ;; (require 'pyim-dregcache)
+  ;; (setq pyim-dcache-backend 'pyim-dregcache)
+
+  ;; 加载 basedict 拼音词库。
+  (pyim-basedict-enable)
+
+  ;; 将 Emacs 默认输入法设置为 pyim.
+  (setq default-input-method "pyim")
+
+  ;; 显示 5 个候选词。
+  (setq pyim-page-length 5)
+
+  ;; 金手指设置，可以将光标处的编码（比如：拼音字符串）转换为中文。
+  (global-set-key (kbd "M-j") 'pyim-convert-string-at-point)
+
+  ;; 按 "C-<return>" 将光标前的 regexp 转换为可以搜索中文的 regexp.
+  (define-key minibuffer-local-map (kbd "C-<return>") 'pyim-cregexp-convert-at-point)
+
+  ;; 设置 pyim 默认使用的输入法策略，我使用全拼。
+  (pyim-default-scheme 'pyim-shuangpin)
+  ;; (pyim-default-scheme 'wubi)
+  ;; (pyim-default-scheme 'cangjie)
+
+  ;; 设置 pyim 是否使用云拼音
+  (setq pyim-cloudim 'baidu)
+
+  ;; 设置 pyim 探针
+  ;; 我自己使用的中英文动态切换规则是：
+  ;; 1. 光标只有在注释里面时，才可以输入中文。
+  ;; 2. 光标前是汉字字符时，才能输入中文。
+  ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
+  (setq-default pyim-english-input-switch-functions
+                '(pyim-probe-dynamic-english
+                  pyim-probe-isearch-mode
+                  pyim-probe-program-mode
+                  pyim-probe-org-structure-template))
+
+  (setq-default pyim-punctuation-half-width-functions
+                '(pyim-probe-punctuation-line-beginning
+                  pyim-probe-punctuation-after-punctuation))
+
+  ;; 开启代码搜索中文功能（比如拼音，五笔码等）
+  (pyim-isearch-mode 1)
+)
+
+(use-package! pyim-basedict
+  :after pyim)

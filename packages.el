@@ -66,3 +66,19 @@
            :files ("*.el" "filters" "preprocessors")))
 
 (package! org-modern)
+
+(package! nano-theme
+  :recipe (:host github
+           :repo "rougier/nano-theme"))
+(package! nano-modeline)
+(package! nano-vertico
+  :recipe (:host github
+           :repo "rougier/nano-vertico"))
+
+(package! solo-jazz-theme)
+
+(package! catppuccin-theme)
+(package! kaolin-themes)
+
+(package! pyim)
+(package! pyim-basedict)
