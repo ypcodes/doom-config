@@ -44,7 +44,7 @@ accept. For example:
              when (font-installed-p font)
              return (set-face-attribute 'default nil
                                         :family font
-                                        :height 110))
+                                        :height 120))
 
     ;; Set mode-line font
     (cl-loop for font in '("Menlo" "SF Pro Display" "Helvetica")
@@ -925,8 +925,8 @@ menucolor=blue]{hyperref}
 \\usepackage{fontspec,xunicode,xltxtra}
 \\newfontinstance\\MONO{\\fontnamemono}
 \\newcommand{\\mono}[1]{{\\MONO #1}}
-\\setCJKmainfont[Scale=0.9]{Adobe Fangsong Std}%中文字体
-\\setCJKmonofont[Scale=0.9]{Adobe Fangsong Std}
+\\setCJKmainfont[Scale=0.9]{Noto Sans CJK SC}%中文字体
+\\setCJKmonofont[Scale=0.9]{Noto Sans CJK SC}
 \\hypersetup{unicode=true}
 \\geometry{a4paper, textwidth=6.5in, textheight=10in,
 marginparsep=7pt, marginparwidth=.6in}
