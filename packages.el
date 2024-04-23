@@ -100,3 +100,6 @@
 (package! image-roll :recipe
   (:host github
    :repo "dalanicolai/image-roll.el"))
+
+(package! ob-mathematica)
+(package! wolfram-mode)

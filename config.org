@@ -216,7 +216,7 @@ Misc
 
 ;; (setq doom-theme 'doom-peacock)
 #+end_src
-* COMMENT  Dashboard setup
+* Dashboard setup
 Copy from https://github.com/tecosaur/emacs-config, phrase text is placed in ~./misc/splash-phrases/*.txt~.
 
 Setup Start
@@ -783,7 +783,7 @@ For prettier lookup
 \\usepackage[usenames]{xcolor}
 \\usepackage{soul}
 \\usepackage{adjustbox}
-\\usepackage{amsmath}
+\\usepackage{amsmath,amsthm}
 \\usepackage{amssymb}
 \\usepackage{siunitx}
 \\usepackage{cancel}
@@ -892,15 +892,16 @@ want to edit them afterwards though, so let's make that happen by default.
 #+begin_src emacs-lisp
 (after! ox-latex
   (setq org-latex-pdf-process '("latexmk -xelatex -quiet -shell-escape -f %f"))
-  (setq org-latex-listings 'minted)
+  (setq org-latex-src-block-backend 'minted)
   (add-to-list 'org-latex-classes
                '("article"
-                 "\\documentclass[10pt,a4paper]{report}
+                 "\\documentclass[12pt,a4paper]{book}
 \\usepackage{graphicx}
 \\usepackage{xcolor}
 \\usepackage{xeCJK}
 \\usepackage{lmodern}
 \\usepackage{verbatim}
+\\usepackage{amsmath, amsthm}
 \\usepackage{minted}
 \\usepackage{fixltx2e}
 \\usepackage{longtable}
@@ -918,23 +919,62 @@ want to edit them afterwards though, so let's make that happen by default.
 \\usepackage{latexsym}
 \\usepackage{natbib}
 \\usepackage{fancyhdr}
-\\usepackage[xetex,colorlinks=true,CJKbookmarks=true,
-linkcolor=blue,
-urlcolor=blue,
-menucolor=blue]{hyperref}
+\\usepackage{cancel}
+\\usepackage{mathtools}
+\\usepackage[xetex,colorlinks=true,CJKbookmarks=true, linkcolor=blue, urlcolor=blue, menucolor=blue]{hyperref}
 \\usepackage{fontspec,xunicode,xltxtra}
 \\newfontinstance\\MONO{\\fontnamemono}
 \\newcommand{\\mono}[1]{{\\MONO #1}}
-\\setCJKmainfont[Scale=0.9]{Noto Sans CJK SC}%中文字体
-\\setCJKmonofont[Scale=0.9]{Noto Sans CJK SC}
+\\setCJKmainfont[Scale=0.9]{SimSun}%中文字体
+\\setCJKmonofont[Scale=0.9]{SimSun}
 \\hypersetup{unicode=true}
-\\geometry{a4paper, textwidth=6.5in, textheight=10in,
-marginparsep=7pt, marginparwidth=.6in}
+\\geometry{a4paper, textwidth=6.5in, textheight=10in,marginparsep=7pt, marginparwidth=.6in}
 \\punctstyle{kaiming}
+
 \\title{}
-\\fancyfoot[C]{\\bfseries\\thepage}
-\\chead{\\MakeUppercase\\sectionmark}
+% 定义代码高亮风格
+% \\usemintedstyle{manni} % 可以选择你喜欢的风格
+
+% 设置代码背景色
+\\setminted{bgcolor=white} % 对应于 listings 的 backgroundcolor
+
+% 设置字体大小和样式，minted 没有直接的选项，但可以通过其他 LaTeX 命令来设置
+\\setminted{fontsize=\\small, baselinestretch=1}
+
+% 设置行号
+\\setminted{linenos, numbersep=5pt, frame=lines, framesep=2mm}
+
+% 设置页眉页脚的分隔线
+\\renewcommand{\\headrulewidth}{0.4pt} % 页眉分隔线宽度
+\\renewcommand{\\footrulewidth}{0pt} % 页脚分隔线宽度（0pt表示没有分隔线）
+\\newtheorem{lemma}{Lemma}[chapter]
+\\newtheorem{corollary}{Corollary}[chapter]
+\\newtheorem{proposition}{Proposition}[chapter]
+
+% 定义其他环境
+\\newtheorem{ex}{Exercise}[chapter]
+\\newtheorem{notation}{Notation}[chapter]
+\\newtheorem{remark}{Remark}[chapter]
+
+\\newtheorem{theorem}{Theorem}[chapter]
+\\newtheorem{definition}{Definition}[chapter]
+\\newtheorem{exm}{Example}[chapter]
 \\pagestyle{fancy}
+\\fancyhf{}
+\\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}} % 修改页眉的chaptermark
+\\fancyfoot[R]{\\thepage}
+\\fancyhead{} % 页眉清空
+\\fancyhead[R]{%
+   % The chapter number only if it's greater than 0
+   \\ifnum\\value{chapter}>0 \\chaptername\ \\thechapter: \\fi
+   % The chapter title
+   \\leftmark}
+\\fancypagestyle{plain}{
+\\fancyhead{} % 页眉清空
+\\renewcommand{\\headrulewidth}{0pt} % 去页眉线
+\\fancyfoot{}
+\\fancyfoot[R]{\\thepage}
+}
 \\tolerance=1000
 [NO-DEFAULT-PACKAGES]
 [NO-PACKAGES]
@@ -945,7 +985,71 @@ marginparsep=7pt, marginparwidth=.6in}
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  )
+
+;; 使用Listings宏包格式化源代码(只是把代码框用listing环境框起来，还需要额外的设置)
+;;(setq org-export-latex-listings t)
+;; Options for \lset command（reference to listing Manual)
+;; 导出Beamer的设置
+;; allow for export=>beamer by placing #+LaTeX_CLASS: beamer in org files
+;;-----------------------------------------------------------------------------
+(add-to-list 'org-latex-classes
+             ;; beamer class, for presentations
+             '("beamer"
+               "\\documentclass[11pt,professionalfonts]{beamer}
+\\mode
+
+\\setbeamertemplate{footline}[frame number]{}
+\\setbeamertemplate{navigation symbols}{}
+
+\\usecolortheme{lily}
+\\setbeamercolor{block title}{bg=blue!20,fg=black}
+\\setbeamercolor{block body}{bg = blue!10, fg = black}
+\\setbeamertemplate{itemize item}[square]
+\\setbeamercolor{itemize item}{fg = cyan}
+\\setbeamercolor{enumerate item}{fg = cyan}
+
+\\usetheme{default}
+\\beamertemplatenavigationsymbolsempty
+\\setbeamercolor{titlelike}{fg=cyan}
+\\beamertemplateballitem
+\\setbeameroption{show notes}
+\\usepackage{graphicx}
+\\usepackage{tikz}
+\\usepackage{xcolor}
+\\usepackage{xeCJK}
+\\usepackage{amsmath}
+\\usepackage{lmodern}
+\\usepackage{fontspec,xunicode,xltxtra}
+\\usepackage{polyglossia}
+\\setmainfont{Times New Roman}
+\\setCJKmainfont{SimSun}
+\\setCJKmonofont{SimSun}
+\\usepackage{verbatim}
+\\usepackage{listings}
+% \\institute{{{{beamerinstitute}}}}
+\\subject{{{{beamersubject}}}}"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\begin{frame}[fragile]\\frametitle{%s}"
+                "\\end{frame}"
+                "\\begin{frame}[fragile]\\frametitle{%s}"
+                "\\end{frame}")))
+)
+#+end_src
+** Mathematica
+#+begin_src emacs-lisp
+;; Load mathematica from contrib
+  (require 'wolfram-mode)
+(org-babel-do-load-languages 'org-babel-load-languages
+                             (append org-babel-load-languages
+                                     '((mathematica . t)
+                                       )
+                                     ))
+;; Sanitize output and deal with paths
+(setq org-babel-mathematica-command "~/.local/bin/mash")
+;; Font-locking
+(add-to-list 'org-src-lang-modes '("mathematica" . wolfram))
+;; For wolfram-mode
+(setq mathematica-command-line "~/.local/bin/mash")
 #+end_src
 * Lookup setup
 ** Dash-docs
