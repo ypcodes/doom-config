@@ -8,6 +8,7 @@ clients, file templates and snippets. It is optional.
 #+begin_src emacs-lisp
 (setq user-full-name "Peng Ye"
       user-mail-address "yepeng230@gmail.com")
+
 #+end_src
 
 Doom exposes five (optional) variables for controlling fonts in Doom:
@@ -23,69 +24,10 @@ See 'C-h v doom-font' for documentation and more examples of what they
 accept. For example:
 
 #+begin_src emacs-lisp
-;; (defun peng/set-fonts ()
-;;   (interactive)
-;;   (set-face-attribute 'default nil :font (font-spec :family "FiraCode Nerd Font" :size 18))
-;;   ;;(set-fontset-font t 'unicode (font-spec :family "Noto Sans CJK SC" :size 16) nil 'prepend)
-;;   (set-fontset-font t '(#x2ff0 . #x9ffc) (font-spec :family "Noto Sans CJK SC" :size 18) nil 'prepend)
-;;   )
-;; (add-hook! 'window-setup-hook :append 'peng/set-fonts)
-;;(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 12 :weight 'medium))
-(defun font-installed-p (font-name)
-  "Check if font with FONT-NAME is available."
-  (find-font (font-spec :name font-name)))
-(defun centaur-setup-fonts ()
-  "Setup fonts."
-  (when (display-graphic-p)
-    ;; Set default font
-    (cl-loop for font in '("Cascadia Code" "Fira Code" "Jetbrains Mono"
-                           "SF Mono" "Hack" "Source Code Pro" "Menlo"
-                           "Monaco" "DejaVu Sans Mono" "Consolas")
-             when (font-installed-p font)
-             return (set-face-attribute 'default nil
-                                        :family font
-                                        :height 120))
-
-    ;; Set mode-line font
-    (cl-loop for font in '("Menlo" "SF Pro Display" "Helvetica")
-             when (font-installed-p font)
-             return (progn
-                      (set-face-attribute 'mode-line nil :family font :height 120)
-                      (when (facep 'mode-line-active)
-                        (set-face-attribute 'mode-line-active nil :family font :height 120))
-                      (set-face-attribute 'mode-line-inactive nil :family font :height 120)))
-
-    ;; Specify font for all unicode characters
-    (cl-loop for font in '("Segoe UI Symbol" "Symbola" "Symbol")
-             when (font-installed-p font)
-             return (if (< emacs-major-version 27)
-                        (set-fontset-font "fontset-default" 'unicode font nil 'prepend)
-                      (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend)))
-
-    ;; Emoji
-    (cl-loop for font in '("Noto Color Emoji" "Apple Color Emoji" "Segoe UI Emoji")
-             when (font-installed-p font)
-             return (cond
-                     ((< emacs-major-version 27)
-                      (set-fontset-font "fontset-default" 'unicode font nil 'prepend))
-                     ((< emacs-major-version 28)
-                      (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
-                     (t
-                      (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))))
-
-    ;; Specify font for Chinese characters
-    (cl-loop for font in '("LXGW Neo Xihei" "WenQuanYi Micro Hei Mono" "LXGW WenKai Screen"
-                           "LXGW WenKai Mono" "PingFang SC" "Microsoft Yahei UI" "Simhei")
-             when (font-installed-p font)
-             return (progn
-                      (setq face-font-rescale-alist `((,font . 1.3)))
-                      (set-fontset-font t 'han (font-spec :family font))))))
-
-(centaur-setup-fonts)
-(add-hook 'window-setup-hook #'centaur-setup-fonts)
-(add-hook 'server-after-make-frame-hook #'centaur-setup-fonts)
-
+(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font" :size 17))
 #+end_src
+
 
 If you or Emacs can't find your font, use 'M-x describe-font' to look them
 up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -215,6 +157,9 @@ Misc
       x-underline-at-descent-line t)
 
 ;; (setq doom-theme 'doom-peacock)
+
+(add-to-list 'default-frame-alist '(height . 24))
+(add-to-list 'default-frame-alist '(width . 80))
 #+end_src
 * Dashboard setup
 Copy from https://github.com/tecosaur/emacs-config, phrase text is placed in ~./misc/splash-phrases/*.txt~.
@@ -754,8 +699,6 @@ Setup End
   :config
   (require 'eaf-browser)
   (require 'eaf-pdf-viewer)
-  (require 'eaf-file-manager)
-  (require 'eaf-pyqterminal)
   (require 'eaf-evil)
   (setq browse-url-browser-function 'eaf-open-browser)
   (setq eaf-evil-leader-key "C-SPC")
@@ -895,10 +838,15 @@ want to edit them afterwards though, so let's make that happen by default.
   (setq org-latex-src-block-backend 'minted)
   (add-to-list 'org-latex-classes
                '("article"
-                 "\\documentclass[12pt,a4paper]{book}
+                 "\\documentclass[12pt,a4paper]{report}
 \\usepackage{graphicx}
 \\usepackage{xcolor}
 \\usepackage{xeCJK}
+\\usepackage{enumitem}
+\\usepackage{threeparttable}
+\\usepackage{marginnote}
+\\usepackage{cleveref}
+\\usepackage[framemethod=TikZ]{mdframed}
 \\usepackage{lmodern}
 \\usepackage{verbatim}
 \\usepackage{amsmath, amsthm}
@@ -913,7 +861,7 @@ want to edit them afterwards though, so let's make that happen by default.
 \\usepackage{listings}
 \\usepackage{geometry}
 \\usepackage{algorithm}
-\\usepackage{algorithmic}
+\\usepackage[noend]{algpseudocode}
 \\usepackage{marvosym}
 \\usepackage{wasysym}
 \\usepackage{latexsym}
@@ -976,6 +924,7 @@ want to edit them afterwards though, so let's make that happen by default.
 \\fancyfoot[R]{\\thepage}
 }
 \\tolerance=1000
+
 [NO-DEFAULT-PACKAGES]
 [NO-PACKAGES]
 [EXTRA]"
@@ -1037,19 +986,15 @@ want to edit them afterwards though, so let's make that happen by default.
 #+end_src
 ** Mathematica
 #+begin_src emacs-lisp
-;; Load mathematica from contrib
-  (require 'wolfram-mode)
-(org-babel-do-load-languages 'org-babel-load-languages
-                             (append org-babel-load-languages
-                                     '((mathematica . t)
-                                       )
-                                     ))
-;; Sanitize output and deal with paths
-(setq org-babel-mathematica-command "~/.local/bin/mash")
-;; Font-locking
-(add-to-list 'org-src-lang-modes '("mathematica" . wolfram))
-;; For wolfram-mode
-(setq mathematica-command-line "~/.local/bin/mash")
+(use-package! ob-mathematica :init (setq org-babel-mathematica-command "wolfram -script"))
+(use-package! wolfram-mode
+  :config
+  (org-babel-do-load-languages ;; load mathematica from contrib
+   'org-babel-load-languages
+   (append org-babel-load-languages
+           '((mathematica . t))))
+ (add-to-list 'org-src-lang-modes '("mathematica" . "wolfram")) ;; font-locking
+  )
 #+end_src
 * Lookup setup
 ** Dash-docs
@@ -1063,12 +1008,13 @@ want to edit them afterwards though, so let's make that happen by default.
 #+end_src
 * pyim
 #+begin_src emacs-lisp
+ (set-language-environment "UTF-8")
 (after! pyim
   (require 'pyim-cregexp-utils)
   (require 'pyim-liberime)
   ;; 如果使用 popup page tooltip, 就需要加载 popup 包。
   ;; (require 'popup nil t)
-  ;; (setq pyim-page-tooltip 'popup)
+  (setq pyim-page-tooltip 'posframe)
 
   ;; 如果使用 pyim-dregcache dcache 后端，就需要加载 pyim-dregcache 包。
   ;; (require 'pyim-dregcache)
