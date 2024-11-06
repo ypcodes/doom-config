@@ -1,12 +1,12 @@
 (setq user-full-name "Peng Ye"
       user-mail-address "yepeng230@gmail.com")
 
-(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font" :size 17))
+(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 15 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font" :size 16))
 
-(setq doom-theme 'doom-tokyo-night)
+(setq doom-theme 'doom-one)
 
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type 't)
 
 (setq org-directory "~/org/"
       org-roam-directory "~/org/roam")
@@ -633,11 +633,6 @@ in hooks that call functions with arguments."
       org-re-reveal-plugins '(markdown notes math search zoom))
 
 (setq org-beamer-theme "[progressbar=foot]metropolis")
-
-(use-package! org-modern
-  :hook (org-mode . global-org-modern-mode)
-  :config
-  (setq org-modern-label-border 0.3))
 
 (after! ox-latex
   (setq org-latex-pdf-process '("latexmk -xelatex -quiet -shell-escape -f %f"))

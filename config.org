@@ -23,9 +23,9 @@ Doom exposes five (optional) variables for controlling fonts in Doom:
 See 'C-h v doom-font' for documentation and more examples of what they
 accept. For example:
 
-#+begin_src emacs-lisp
-(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font" :size 17))
+#+begin_src emacs-lisp :exports no
+(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 15 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font" :size 16))
 #+end_src
 
 
@@ -38,12 +38,12 @@ There are two ways to load a theme. Both assume the theme is installed and
 available. You can either set `doom-theme' or manually load a theme with the
 `load-theme' function. This is the default:
 #+begin_src emacs-lisp
-(setq doom-theme 'doom-tokyo-night)
+(setq doom-theme 'doom-one)
 #+end_src
 This determines the style of line numbers in effect. If set to `nil', line
 numbers are disabled. For relative line numbers, set this to `relative'.
 #+begin_src emacs-lisp
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type 't)
 #+end_src
 
 If you use `org' and don't want your org files in the default location below,
@@ -823,13 +823,6 @@ want to edit them afterwards though, so let's make that happen by default.
 ** Beamer
 #+begin_src emacs-lisp
 (setq org-beamer-theme "[progressbar=foot]metropolis")
-#+end_src
-** Org Modern
-#+begin_src emacs-lisp
-(use-package! org-modern
-  :hook (org-mode . global-org-modern-mode)
-  :config
-  (setq org-modern-label-border 0.3))
 #+end_src
 ** Org latex
 #+begin_src emacs-lisp
